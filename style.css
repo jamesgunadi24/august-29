@@ -1,0 +1,42 @@
+/* Reveal Text Styling */
+.reveal-text {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+/* Premium Spotify Button */
+.spotify-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 12px 24px;
+    border-radius: 40px; /* Rounded pill shape */
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.spotify-button:active {
+    transform: scale(0.95);
+    background: var(--gold);
+    color: var(--bg);
+}
+
+.spotify-button svg {
+    fill: var(--gold);
+    transition: all 0.3s ease;
+}
+
+.spotify-button:active svg {
+    fill: var(--bg);
+}

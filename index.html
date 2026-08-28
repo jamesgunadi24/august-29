@@ -1,0 +1,26 @@
+<!-- STAGE 2: THE SCRATCH-OFF -->
+<section id="view-scratch" class="view">
+    <div class="content-box full-width">
+        <h2 class="view-title">A Gift in the Car</h2>
+        <p class="instruction">Sweep away the gold to reveal your first clue.</p>
+        
+        <div class="scratch-wrapper">
+            <canvas id="scratch-canvas"></canvas>
+            <div class="scratch-reveal-content">
+                <p class="reveal-text">Look in the <br><strong>backseat...</strong></p>
+                
+                <!-- The Spotify Button -->
+                <a href="https://open.spotify.com/playlist/5VcqR5i2drlZmpupbvcppW?si=94f4c5ad23ed4601" 
+                   class="spotify-button" 
+                   target="_blank">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.5 17.33c-.22.36-.68.47-1.05.25-2.84-1.74-6.42-2.13-10.63-1.16-.4.1-.8-.16-.9-.57-.1-.4.16-.8.57-.9 4.6-.1 8.56.4 11.75 2.33.37.22.48.68.26 1.05zm1.46-3.26c-.28.45-.87.6-1.32.32-3.25-2-8.2-2.58-12.04-1.42-.5.15-1.04-.13-1.2-.63-.16-.5.13-1.04.63-1.2 4.38-1.33 9.85-.68 13.6 1.62.45.28.6.87.33 1.32zm.12-3.42c-3.9-2.32-10.32-2.53-14.07-1.4-.6.18-1.23-.16-1.4-.76-.18-.6.16-1.23.76-1.4 4.3-1.3 11.4-1.05 15.9 1.63.54.32.72 1.02.4 1.56-.32.53-1.02.72-1.56.4z"/></svg>
+                    <span>Play Our Soundtrack</span>
+                </a>
+
+                <button class="primary-button small" onclick="StateManager.transitionTo('beach')">
+                    We've Arrived
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
