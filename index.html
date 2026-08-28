@@ -1,26 +1,289 @@
-<!-- STAGE 2: THE SCRATCH-OFF -->
-<section id="view-scratch" class="view">
-    <div class="content-box full-width">
-        <h2 class="view-title">A Gift in the Car</h2>
-        <p class="instruction">Sweep away the gold to reveal your first clue.</p>
-        
-        <div class="scratch-wrapper">
-            <canvas id="scratch-canvas"></canvas>
-            <div class="scratch-reveal-content">
-                <p class="reveal-text">Look in the <br><strong>backseat...</strong></p>
-                
-                <!-- The Spotify Button -->
-                <a href="https://open.spotify.com/playlist/5VcqR5i2drlZmpupbvcppW?si=94f4c5ad23ed4601" 
-                   class="spotify-button" 
-                   target="_blank">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.5 17.33c-.22.36-.68.47-1.05.25-2.84-1.74-6.42-2.13-10.63-1.16-.4.1-.8-.16-.9-.57-.1-.4.16-.8.57-.9 4.6-.1 8.56.4 11.75 2.33.37.22.48.68.26 1.05zm1.46-3.26c-.28.45-.87.6-1.32.32-3.25-2-8.2-2.58-12.04-1.42-.5.15-1.04-.13-1.2-.63-.16-.5.13-1.04.63-1.2 4.38-1.33 9.85-.68 13.6 1.62.45.28.6.87.33 1.32zm.12-3.42c-3.9-2.32-10.32-2.53-14.07-1.4-.6.18-1.23-.16-1.4-.76-.18-.6.16-1.23.76-1.4 4.3-1.3 11.4-1.05 15.9 1.63.54.32.72 1.02.4 1.56-.32.53-1.02.72-1.56.4z"/></svg>
-                    <span>Play Our Soundtrack</span>
-                </a>
+It looks like the browser is failing to load your style.css and app.js files
+because they aren't linked correctly, or the browser is blocking them because
+you are opening the file directly from your computer (file:///C:/...) instead of
+a server.
 
-                <button class="primary-button small" onclick="StateManager.transitionTo('beach')">
-                    We've Arrived
-                </button>
+To fix this immediately and ensure it looks "Premium" right away, I have
+consolidated everything into one single file. This eliminates "File Not Found"
+errors.
+
+Instructions:
+
+1.  Create a brand new file named index.html.
+2.  Paste the code below into it.
+3.  Open that file in your browser.
+4.  Important: I have set the TARGET_DATE to the past (2024) so you can test it
+    immediately. Change it back to 2026 when you are finished testing.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>August 29 • 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --gold: #c5a059;
+            --gold-bright: #e9d1a3;
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            height: 100svh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Background Atmosphere */
+        .stars-container {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
+            z-index: -1;
+        }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+
+        /* View Management */
+        .view {
+            display: none;
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            padding: calc(var(--safe-top) + 2rem) 2rem calc(var(--safe-bottom) + 2rem);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: absolute;
+            transition: opacity 0.8s ease;
+        }
+
+        .view.active { display: flex; animation: fadeIn 0.8s forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Typography */
+        .view-title { font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 1rem; color: var(--gold); line-height: 1.2; }
+        .instruction { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-style: italic; }
+        .date-label { font-size: 0.7rem; letter-spacing: 4px; color: var(--gold); margin-bottom: 1rem; }
+
+        /* Buttons */
+        .primary-button {
+            background: transparent; border: 1px solid var(--gold); padding: 1.2rem 3rem;
+            color: var(--gold); font-family: 'Cinzel', serif; font-weight: 600;
+            letter-spacing: 2px; border-radius: 2px; cursor: pointer; transition: 0.3s;
+        }
+        .primary-button:active { background: var(--gold); color: var(--bg); transform: scale(0.95); }
+
+        /* Stage 1: Vault */
+        .code-display { display: flex; gap: 1rem; margin-bottom: 2.5rem; }
+        .code-display span {
+            width: 14px; height: 14px; border: 1px solid var(--gold); border-radius: 50%;
+            transition: 0.3s;
+        }
+        .code-display span.filled { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .key {
+            width: 70px; height: 70px; border-radius: 50%; border: 1px solid var(--glass-border);
+            background: var(--glass); color: white; font-size: 1.2rem; display: flex;
+            align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+
+        /* Stage 2: Scratch-Off */
+        .scratch-wrapper {
+            position: relative; width: 320px; height: 320px;
+            background: #111; border-radius: 15px; overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        #scratch-canvas { position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; }
+        .scratch-reveal-content {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1; padding: 20px;
+        }
+        
+        .spotify-button {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--gold);
+            color: var(--gold); padding: 12px 20px; border-radius: 40px;
+            text-decoration: none; font-size: 0.8rem; margin: 1.5rem 0;
+            transition: 0.3s;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="stars-container"></div>
+    <div class="vignette"></div>
+
+    <main id="app">
+        <!-- LANDING -->
+        <section id="view-landing" class="view active">
+            <p class="date-label">AUGUST 29, 2026</p>
+            <h1 class="view-title">The <br>Adventure <br>Awaits</h1>
+            <div id="countdown-container" class="hidden">
+                <p class="instruction">Patience, my love. Reopening in:</p>
+                <p id="timer" style="font-family: monospace; letter-spacing: 2px;"></p>
             </div>
-        </div>
-    </div>
-</section>
+            <button id="btn-start" class="primary-button">BEGIN</button>
+        </section>
+
+        <!-- STAGE 1: VAULT -->
+        <section id="view-vault" class="view">
+            <h2 class="view-title">The Entry</h2>
+            <p class="instruction">Enter the four-digit key to begin.</p>
+            <div class="code-display" id="code-display">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="keypad" id="keypad"></div>
+        </section>
+
+        <!-- STAGE 2: CAR -->
+        <section id="view-scratch" class="view">
+            <h2 class="view-title">A Gift</h2>
+            <p class="instruction">Clear the gold to see your first clue.</p>
+            <div class="scratch-wrapper">
+                <canvas id="scratch-canvas"></canvas>
+                <div class="scratch-reveal-content">
+                    <p style="font-size: 1.2rem; font-family: 'Cinzel';">Look in the <br><strong>Backseat</strong></p>
+                    <a href="https://open.spotify.com/playlist/5VcqR5i2drlZmpupbvcppW?si=94f4c5ad23ed4601" class="spotify-button" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.5 17.33c-.22.36-.68.47-1.05.25-2.84-1.74-6.42-2.13-10.63-1.16-.4.1-.8-.16-.9-.57-.1-.4.16-.8.57-.9 4.6-.1 8.56.4 11.75 2.33.37.22.48.68.26 1.05zm1.46-3.26c-.28.45-.87.6-1.32.32-3.25-2-8.2-2.58-12.04-1.42-.5.15-1.04-.13-1.2-.63-.16-.5.13-1.04.63-1.2 4.38-1.33 9.85-.68 13.6 1.62.45.28.6.87.33 1.32zm.12-3.42c-3.9-2.32-10.32-2.53-14.07-1.4-.6.18-1.23-.16-1.4-.76-.18-.6.16-1.23.76-1.4 4.3-1.3 11.4-1.05 15.9 1.63.54.32.72 1.02.4 1.56-.32.53-1.02.72-1.56.4z"/></svg>
+                        OUR SOUNDTRACK
+                    </a>
+                    <button class="primary-button" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;" onclick="StateManager.transitionTo('beach')">WE HAVE ARRIVED</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Placeholder for next stage -->
+        <section id="view-beach" class="view">
+            <h2 class="view-title">Whitesand Beach</h2>
+            <p class="instruction">Coming soon...</p>
+        </section>
+    </main>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Change this to '2026-08-29T00:00:00' for the real day
+        const TARGET_DATE = new Date('2024-01-01T00:00:00'); 
+        const VAULT_CODE = '0000';
+
+        const StateManager = {
+            state: { currentStep: 'landing' },
+
+            init() {
+                const saved = localStorage.getItem('bday_progress');
+                if (saved) this.state = JSON.parse(saved);
+                
+                this.render();
+                this.handleLanding();
+                this.initVault();
+            },
+
+            save() { localStorage.setItem('bday_progress', JSON.stringify(this.state)); },
+
+            render() {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(`view-${this.state.currentStep}`).classList.add('active');
+                if (this.state.currentStep === 'scratch') this.initScratch();
+            },
+
+            transitionTo(id) {
+                this.state.currentStep = id;
+                this.save();
+                this.render();
+            },
+
+            handleLanding() {
+                const btn = document.getElementById('btn-start');
+                const clock = document.getElementById('countdown-container');
+                
+                const timer = setInterval(() => {
+                    const diff = TARGET_DATE - new Date();
+                    if (diff <= 0) {
+                        btn.classList.remove('hidden');
+                        clock.classList.add('hidden');
+                        clearInterval(timer);
+                    } else {
+                        btn.classList.add('hidden');
+                        clock.classList.remove('hidden');
+                        const d = Math.floor(diff/864e5), h = Math.floor(diff%864e5/36e5), m = Math.floor(diff%36e5/6e4), s = Math.floor(diff%6e4/1e3);
+                        document.getElementById('timer').innerText = `${d}d ${h}h ${m}m ${s}s`;
+                    }
+                }, 1000);
+
+                btn.onclick = () => this.transitionTo('vault');
+            },
+
+            initVault() {
+                const keypad = document.getElementById('keypad');
+                let input = "";
+                const dots = document.querySelectorAll('.code-display span');
+
+                [1,2,3,4,5,6,7,8,9,'C',0,'OK'].forEach(val => {
+                    const k = document.createElement('div');
+                    k.className = 'key';
+                    k.innerText = val;
+                    k.onclick = () => {
+                        if (val === 'C') input = "";
+                        else if (val === 'OK') {
+                            if (input === VAULT_CODE) this.transitionTo('scratch');
+                            else input = "";
+                        }
+                        else if (input.length < 4) input += val;
+                        
+                        dots.forEach((d, i) => d.classList.toggle('filled', i < input.length));
+                    };
+                    keypad.appendChild(k);
+                });
+            },
+
+            initScratch() {
+                const canvas = document.getElementById('scratch-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 320; canvas.height = 320;
+
+                // Gold Cover
+                ctx.fillStyle = '#c5a059';
+                ctx.fillRect(0,0,320,320);
+                // Texture
+                ctx.fillStyle = '#e9d1a3';
+                for(let i=0; i<400; i++) ctx.fillRect(Math.random()*320, Math.random()*320, 1, 1);
+
+                const scratch = (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const t = e.touches ? e.touches[0] : e;
+                    const x = t.clientX - rect.left;
+                    const y = t.clientY - rect.top;
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath(); ctx.arc(x, y, 25, 0, 6.28); ctx.fill();
+                };
+
+                canvas.ontouchmove = (e) => { e.preventDefault(); scratch(e); };
+                canvas.onmousemove = (e) => { if(e.buttons === 1) scratch(e); };
+            }
+        };
+
+        window.onload = () => StateManager.init();
+    </script>
+</body>
+</html>
